@@ -1,4 +1,4 @@
-"""
+user"""
 This is the users module and supports all the REST actions for the
 USERS collection
 """
@@ -52,6 +52,20 @@ def read_one(lname):
             404, "User with last name {lname} not found".format(lname=lname)
         )
     return user
+
+def read_one(user_id):
+    """
+    This function responds to a request for /api/users/{user_id}
+    with one matching user from users
+    :param user_id:   ID of user to find
+    :return:            user matching ID
+    """
+    user = User.query.filter(User.user_id == user_id).one_or_none()             # Get the user requested
+    if user is not None:                                                        # Did we find a user?
+        user_schema = UserSchema()                                              # Serialize the data for the response
+        return user_schema.dump(user).data                                      # Otherwise, nope, didn't find that user
+    else:
+        abort(404, 'User not found for Id: {user_id}'.format(user_id = user_id))
 
 def create(user):
     """
