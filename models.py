@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime                                                   # 3rd party modules
 from config import sql_alchemy_db, marshmallow
 
 class User(sql_alchemy_db.Model):
