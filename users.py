@@ -38,24 +38,9 @@ def read_all():
     user_schema = UserSchema(many = True)                                       # Serialize the data for the response
     return user_schema.dump(users).data
 
-def read_one(lname):
-    """
-    This function responds to a request for /v1/users/{lname}
-    with one matching user from users
-    :param lname:   last name of user to find
-    :return:        user matching last name
-    """
-    if lname in USERS:                                                          # Does the user exist in users?
-        user = USERS.get(lname)
-    else:                                                                       # otherwise, nope, not found
-        abort(
-            404, "User with last name {lname} not found".format(lname=lname)
-        )
-    return user
-
 def read_one(user_id):
     """
-    This function responds to a request for /api/users/{user_id}
+    This function responds to a request for /v1/users/{user_id}
     with one matching user from users
     :param user_id:   ID of user to find
     :return:            user matching ID
@@ -69,28 +54,22 @@ def read_one(user_id):
 
 def create(user):
     """
-    This function creates a new user in the users structure
-    based on the passed in user data
-    :param user:  user to create in users structure
+    This function creates a new user in the people structure
+    based on the passed-in user data
+    :param user:  user to create in people structure
     :return:        201 on success, 406 on user exists
     """
-    lname = user.get("lname", None)
-    fname = user.get("fname", None)
-    if lname not in USERS and lname is not None:                                # Does the user exist already?
-        USERS[lname] = {
-            "lname": lname,
-            "fname": fname,
-            "timestamp": get_timestamp(),
-        }
-        return make_response(
-            "{lname} successfully created".format(lname=lname), 201
-        )
-
-    else:                                                                       # Otherwise, they exist, that's an error
-        abort(
-            406,
-            "User with last name {lname} already exists".format(lname=lname),
-        )
+    fname = user.get('fname')
+    lname = user.get('lname')
+    existing_user = User.query.filter(User.fname == fname).filter(User.lname == lname).one_or_none()
+    if existing_user is None:                                                   # Can we insert this user?
+        schema = UserSchema()                                                   # Create a user instance using the schema and the passed-in user
+        new_user = schema.load(user, session=db.session).data
+        db.session.add(new_user)                                                # Add the user to the database
+        db.session.commit()
+        return schema.dump(new_user).data, 201                                  # Serialize and return the newly created user in the response
+    else:                                                                       # Otherwise, nope, user exists already
+        abort(409, f'User {fname} {lname} exists already')
 
 def update(lname, user):
     """
