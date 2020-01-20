@@ -44,7 +44,7 @@ paths:
       tags:
         - Users
       summary: Create a user
-      description: Create a new user in the users list
+      description: Create a new user in users list
       parameters:
         - name: user
           in: body
@@ -61,21 +61,21 @@ paths:
                 description: Last name of user to create
       responses:
         201:
-          description: Successfully created user in list
+          description: Successfully created user
           schema:
-          properties:
-            user_id:
-              type: string
-              description: id of the user
-            fname:
-              type: string
-              description: First name of the user
-            lname:
-              type: string
-              description: Last name of the user
-            timestamp:
-              type: string
-              description: Creation/Update timestamp of the user record
+            properties:
+              user_id:
+                type: string
+                description: id of the user
+              fname:
+                type: string
+                description: First name of the user
+              lname:
+                type: string
+                description: Last name of the user
+              timestamp:
+                type: string
+                description: Creation/Update timestamp of the user record
 
   /users/{user_id}:
     get:

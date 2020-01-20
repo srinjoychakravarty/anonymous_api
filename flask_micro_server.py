@@ -11,7 +11,7 @@ connex_app = config.connexion_application
 connex_app.add_api('swagger.yml')
 
 # Create a URL route in our application for "/"
-@app.route('/')
+@connex_app.route('/')
 def home():
     """
     This function responds to the browser URL localhost:5000/ i.e. the root landing page
