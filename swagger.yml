@@ -17,38 +17,33 @@ paths:
       operationId: users.read_all
       tags:
         - Users
-      summary: Read the entire list of users
-      description: Read the list of users
-      parameters:
-        - name: length
-          in: query
-          type: integer
-          description: Number of users to get from users
-          required: false
-        - name: offset
-          in: query
-          type: integer
-          description: Offset from beginning of list where to start gathering users
-          required: false
+      summary: Read users
+      description: Read the entire set of users, sorted by last name
       responses:
         200:
-          description: Successfully read users list operation
+          description: Successfully read users set operation
           schema:
             type: array
             items:
               properties:
+                user_id:
+                  type: string
+                  description: id of the user
                 fname:
                   type: string
+                  description: First name of the user
                 lname:
                   type: string
+                  description: Last name of the user
                 timestamp:
                   type: string
+                  description: Creation/Update timestamp of the user
 
     post:
       operationId: users.create
       tags:
-        - users
-      summary: Create a user and add it to the users list
+        - Users
+      summary: Create a user
       description: Create a new user in the users list
       parameters:
         - name: user
@@ -67,43 +62,64 @@ paths:
       responses:
         201:
           description: Successfully created user in list
+          schema:
+          properties:
+            user_id:
+              type: string
+              description: id of the user
+            fname:
+              type: string
+              description: First name of the user
+            lname:
+              type: string
+              description: Last name of the user
+            timestamp:
+              type: string
+              description: Creation/Update timestamp of the user record
 
-  /users/{lname}:
+  /users/{user_id}:
     get:
       operationId: users.read_one
       tags:
-        - users
-      summary: Read one user from the users list
+        - Users
+      summary: Read one user
       description: Read one user from the users list
       parameters:
-        - name: lname
+        - name: user_id
           in: path
-          description: Last name of the user to get from the list
-          type: string
+          description: id of the user to get from the list
+          type: integer
           required: True
       responses:
         200:
-          description: Successfully read user from users list operation
+          description: Successfully read user from users data operation
           schema:
+            type: object
             properties:
+              user_id:
+                type: string
+                description: id of the user
               fname:
                 type: string
+                description: First name of the user
               lname:
                 type: string
+                description: Last name of the user
               timestamp:
                 type: string
+                description: Creation/Update timestamp of the user record
 
     put:
       operationId: users.update
       tags:
-        - users
-      summary: Update a user in the users list
+        - Users
+      summary: Update a user
       description: Update a user in the users list
       parameters:
-        - name: lname
+        - name: user_id
           in: path
-          description: Last name of the user to update in the list
-          type: string
+          description: id of the user to update
+          type: integer
           required: True
         - name: user
           in: body
@@ -112,23 +128,40 @@ paths:
             properties:
               fname:
                 type: string
+                description: First name of the user
               lname:
                 type: string
+                description: Last name of the user
       responses:
         200:
           description: Successfully updated user in users list
+          schema:
+            properties:
+              user_id:
+                type: string
+                description: id of the user in the database
+              fname:
+                type: string
+                description: First name of the user
+              lname:
+                type: string
+                description: Last name of the user
+              timestamp:
+                type: string
+                description: Creation/Update timestamp of the user record
 
     delete:
       operationId: users.delete
       tags:
-        - users
-      summary: Delete a user from the users list
-      description: Delete a user
+        - Users
+      summary: Delete a user
+      description: Delete a user from the users list
       parameters:
-        - name: lname
+        - name: user_id
           in: path
-          type: string
-          required: True
+          type: integer
+          description: id of the user to delete
+          required: true
       responses:
         200:
-          description: Successfully deleted a user from users list
+          description: Successfully deleted a user
