@@ -2,20 +2,15 @@
 This is the users module and supports all the REST actions for the
 USERS collection
 """
-
-# System modules
-from datetime import datetime
-
-# 3rd party modules
+from config import sql_alchemy_db                                               # System modules
+from datetime import datetime                                                   # 3rd party modules
 from flask import make_response, abort
-
+from models import User, UserSchema
 
 def get_timestamp():
     return datetime.now().strftime(("%Y-%m-%d %H:%M:%S"))
 
-
-# Data to serve with our API
-USERS = {
+USERS = {                                                                       # Data to serve with our API
     "Farrell": {
         "fname": "Doug",
         "lname": "Farrell",
@@ -33,16 +28,15 @@ USERS = {
     },
 }
 
-
 def read_all():
     """
     This function responds to a request for /v1/users
     with the complete lists of users
     :return:        json string of list of users
     """
-    # Create the list of users from our data
-    return [USERS[key] for key in sorted(USERS.keys())]
-
+    users = User.query.order_by(User.lname).all()                               # Create the list of users from our data
+    user_schema = UserSchema(many = True)                                       # Serialize the data for the response
+    return user_schema.dump(users).data
 
 def read_one(lname):
     """
@@ -51,18 +45,13 @@ def read_one(lname):
     :param lname:   last name of user to find
     :return:        user matching last name
     """
-    # Does the user exist in users?
-    if lname in USERS:
+    if lname in USERS:                                                          # Does the user exist in users?
         user = USERS.get(lname)
-
-    # otherwise, nope, not found
-    else:
+    else:                                                                       # otherwise, nope, not found
         abort(
             404, "User with last name {lname} not found".format(lname=lname)
         )
-
     return user
-
 
 def create(user):
     """
@@ -73,9 +62,7 @@ def create(user):
     """
     lname = user.get("lname", None)
     fname = user.get("fname", None)
-
-    # Does the user exist already?
-    if lname not in USERS and lname is not None:
+    if lname not in USERS and lname is not None:                                # Does the user exist already?
         USERS[lname] = {
             "lname": lname,
             "fname": fname,
@@ -85,13 +72,11 @@ def create(user):
             "{lname} successfully created".format(lname=lname), 201
         )
 
-    # Otherwise, they exist, that's an error
-    else:
+    else:                                                                       # Otherwise, they exist, that's an error
         abort(
             406,
             "User with last name {lname} already exists".format(lname=lname),
         )
-
 
 def update(lname, user):
     """
@@ -100,19 +85,14 @@ def update(lname, user):
     :param user:  user to update
     :return:        updated user structure
     """
-    # Does the user exist in users?
-    if lname in USERS:
+    if lname in USERS:                                                          # Does the user exist in users?
         USERS[lname]["fname"] = user.get("fname")
         USERS[lname]["timestamp"] = get_timestamp()
-
         return USERS[lname]
-
-    # otherwise, nope, that's an error
-    else:
+    else:                                                                       # otherwise, nope, that's an error
         abort(
             404, "User with last name {lname} not found".format(lname=lname)
         )
-
 
 def delete(lname):
     """
@@ -120,15 +100,12 @@ def delete(lname):
     :param lname:   last name of user to delete
     :return:        200 on successful delete, 404 if not found
     """
-    # Does the user to delete exist?
-    if lname in USERS:
+    if lname in USERS:                                                          # Does the user to delete exist?
         del USERS[lname]
         return make_response(
             "{lname} successfully deleted".format(lname=lname), 200
         )
-
-    # Otherwise, nope, user to delete not found
-    else:
+    else:                                                                       # Otherwise, nope, user to delete not found
         abort(
             404, "User with last name {lname} not found".format(lname=lname)
         )
