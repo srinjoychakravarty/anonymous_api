@@ -14,7 +14,8 @@ basePath: /v1
 paths:
   /users:
     get:
-      operationId: users.read_all
+      operationId: database.fetchByQuery("public.user")
+      #operationId: users.read_all
       tags:
         - Users
       summary: Read users

@@ -12,7 +12,8 @@ def read_all():
     with the complete list of users
     :return:        json string of list of users
     """
-    users = User.query.order_by(User.lname).all()                               # Create the list of users from our data
+    #users = User.query.order_by(User.lname).all()                               # Create the list of users from our data
+    users = User.query.all()
     print("THIS IS THE USER LIST: " + str(users))
     user_schema = UserSchema(many = True)                                       # Serialize the data for the response
     serialized_data = user_schema.dump(users)
